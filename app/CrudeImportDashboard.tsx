@@ -203,7 +203,7 @@ export function CrudeImportDashboard() {
   const [end, setEnd] = useState("");
 
   useEffect(() => {
-    fetch("/data/crude-imports.json")
+    fetch("data/crude-imports.json")
       .then((response) => {
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
         return response.json();

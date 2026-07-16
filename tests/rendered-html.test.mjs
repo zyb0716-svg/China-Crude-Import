@@ -88,3 +88,16 @@ test("distributes x-axis labels evenly between the selected endpoints", async ()
   assert.doesNotMatch(source, /index % tickEvery === 0 \|\| index === dates\.length - 1/);
   assert.doesNotMatch(source, /minTickGap|tickIndices\.push\(lastDateIndex\)/);
 });
+
+test("includes a GitHub Pages static deployment path", async () => {
+  const [source, packageJson, workflow, pagesConfig] = await Promise.all([
+    readFile(new URL("../app/CrudeImportDashboard.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../package.json", import.meta.url), "utf8"),
+    readFile(new URL("../.github/workflows/pages.yml", import.meta.url), "utf8"),
+    readFile(new URL("../vite.pages.config.ts", import.meta.url), "utf8"),
+  ]);
+  assert.match(source, /fetch\("data\/crude-imports\.json"\)/);
+  assert.match(packageJson, /"build:pages"/);
+  assert.match(workflow, /actions\/deploy-pages@v4/);
+  assert.match(pagesConfig, /base: repositoryName \? `\/\$\{repositoryName\}\//);
+});
