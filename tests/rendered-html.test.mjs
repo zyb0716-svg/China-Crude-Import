@@ -61,3 +61,14 @@ test("matches the OilChem interface system", async () => {
   assert.match(css, /--primary:\s*#2f6f73/);
   assert.match(css, /grid-template-columns:\s*repeat\(2, minmax\(0, 1fr\)\)/);
 });
+
+test("keeps the monthly detail presentation concise and centered", async () => {
+  const [source, css] = await Promise.all([
+    readFile(new URL("../app/CrudeImportDashboard.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/globals.css", import.meta.url), "utf8"),
+  ]);
+  assert.doesNotMatch(source, /个月有效值|单位：kbd（千桶\/日）|rangeDates\.length\}\s*个月/);
+  assert.match(css, /\.table-panel \.panel-heading\s*{[^}]*text-align:\s*center/s);
+  assert.match(css, /th, td\s*{[^}]*text-align:\s*center/s);
+  assert.match(css, /td\.numeric\s*{[^}]*text-align:\s*center/s);
+});

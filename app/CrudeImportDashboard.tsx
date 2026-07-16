@@ -236,7 +236,6 @@ export function CrudeImportDashboard() {
   const rangeDates = data?.dates.slice(startIndex, endIndex + 1) || [];
   const rangeValues = selected?.values.slice(startIndex, endIndex + 1) || [];
   const avg = average(rangeValues);
-  const validValues = rangeValues.filter((value): value is number => value != null);
   const ranking = useMemo(() => {
     if (!data || !selected) return [];
     let candidates: Series[];
@@ -270,7 +269,6 @@ export function CrudeImportDashboard() {
         <div className="freshness">
           <span>数据日期</span>
           <strong>{data.metadata.latestMonth}</strong>
-          <small>单位：kbd（千桶/日）</small>
         </div>
       </header>
 
@@ -319,7 +317,6 @@ export function CrudeImportDashboard() {
         <div className="metric inline-metric">
           <span>期间月均</span>
           <strong>{fmt(avg)} kbd</strong>
-          <small>{validValues.length} 个月有效值</small>
         </div>
       </section>
 
@@ -363,7 +360,6 @@ export function CrudeImportDashboard() {
       <section className="block table-panel">
         <div className="panel-heading">
           <div><span>MONTHLY DETAIL</span><h3>月度数据明细</h3></div>
-          <em>{rangeDates.length} 个月</em>
         </div>
         <div className="table-scroll">
           <table>
