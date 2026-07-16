@@ -124,11 +124,6 @@ function average(values: Array<number | null>) {
   return valid.length ? valid.reduce((sum, value) => sum + value, 0) / valid.length : null;
 }
 
-function firstLast(values: Array<number | null>) {
-  const valid = values.filter((value): value is number => value != null);
-  return { first: valid[0] ?? null, last: valid.at(-1) ?? null };
-}
-
 function StatCard({ label, value, note }: { label: string; value: string; note: string }) {
   return (
     <article className="stat-card">
@@ -223,7 +218,7 @@ export function CrudeImportDashboard() {
       })
       .then((payload: Payload) => {
         setData(payload);
-        setStart(payload.dates[Math.max(0, payload.dates.length - 36)]);
+        setStart(payload.dates[0]);
         setEnd(payload.dates.at(-1) || "");
       })
       .catch(() => setError("数据加载失败，请刷新页面后重试。"));
@@ -251,12 +246,7 @@ export function CrudeImportDashboard() {
   const rangeDates = data?.dates.slice(startIndex, endIndex + 1) || [];
   const rangeValues = selected?.values.slice(startIndex, endIndex + 1) || [];
   const avg = average(rangeValues);
-  const { first, last } = firstLast(rangeValues);
   const validValues = rangeValues.filter((value): value is number => value != null);
-  const peak = validValues.length ? Math.max(...validValues) : null;
-  const change = first != null && last != null && first !== 0 ? ((last - first) / first) * 100 : null;
-
-  const totalSeries = data?.series.find((item) => item.level === "total") || null;
   const ranking = useMemo(() => {
     if (!data || !selected) return [];
     let candidates: Series[];
@@ -284,12 +274,11 @@ export function CrudeImportDashboard() {
     <main className="dashboard-shell">
       <header className="hero">
         <div>
-          <p className="eyebrow">CHINA CRUDE IMPORT EXPLORER</p>
+          <p className="eyebrow">CHINA CRUDE IMPORT</p>
           <h1>中国原油进口分国别查询</h1>
-          <p className="hero-copy">从总量到大区，再下钻至具体国家，查看月度进口量与来源结构。</p>
         </div>
         <div className="freshness">
-          <span>最新数据</span>
+          <span>数据日期</span>
           <strong>{data.metadata.latestMonth}</strong>
           <small>单位：kbd（千桶/日）</small>
         </div>
@@ -301,14 +290,14 @@ export function CrudeImportDashboard() {
           <div className="segmented">
             {(["total", "continent", "country"] as Level[]).map((item) => (
               <button key={item} className={level === item ? "active" : ""} onClick={() => setLevel(item)} type="button">
-                {item === "total" ? "总进口量" : item === "continent" ? "按大区" : "按国家"}
+                {item === "total" ? "总进口量" : item === "continent" ? "按大洲" : "按国家"}
               </button>
             ))}
           </div>
         </div>
         {level !== "total" && (
           <label>
-            <span className="field-label">大区</span>
+            <span className="field-label">大洲选择</span>
             <select value={continent} onChange={(event) => setContinent(event.target.value)}>
               {continents.map((item) => <option key={item.id} value={item.name}>{displayName(item)}</option>)}
             </select>
@@ -316,8 +305,8 @@ export function CrudeImportDashboard() {
         )}
         {level === "country" && (
           <label className="country-field">
-            <span className="field-label">国家 / 地区</span>
-            <select value={country} onChange={(event) => setCountry(event.target.value)}>
+            <span className="visually-hidden">国家 / 地区</span>
+            <select aria-label="国家或地区" value={country} onChange={(event) => setCountry(event.target.value)}>
               {countries.map((item) => <option key={item.id} value={item.name}>{displayName(item)}</option>)}
             </select>
           </label>
@@ -338,7 +327,7 @@ export function CrudeImportDashboard() {
 
       <section className="selection-title">
         <div>
-          <span>{level === "total" ? "全国口径" : level === "continent" ? "大区口径" : CONTINENT_LABELS[selected.continent || ""]}</span>
+          <span>{level === "total" ? "全国口径" : level === "continent" ? "大洲口径" : CONTINENT_LABELS[selected.continent || ""]}</span>
           <h2>{selectedLabel}</h2>
         </div>
         <p>{periodLabel}</p>
@@ -346,12 +335,9 @@ export function CrudeImportDashboard() {
 
       <section className="stat-grid">
         <StatCard label="期间月均" value={`${fmt(avg)} kbd`} note={`${validValues.length} 个月有效值`} />
-        <StatCard label="期末值" value={`${fmt(last)} kbd`} note={rangeDates.at(-1) || "—"} />
-        <StatCard label="期间峰值" value={`${fmt(peak)} kbd`} note="所选时段内最高月" />
-        <StatCard label="首末变化" value={change == null ? "—" : `${change >= 0 ? "+" : ""}${fmt(change)}%`} note="首个与末个有效值相比" />
       </section>
 
-      <section className="analysis-grid">
+      <section className={`analysis-grid ${level === "country" ? "single" : ""}`}>
         <article className="panel chart-panel">
           <div className="panel-heading">
             <div><span>MONTHLY TREND</span><h3>月度进口趋势</h3></div>
@@ -360,9 +346,9 @@ export function CrudeImportDashboard() {
           <TrendChart dates={rangeDates} values={rangeValues} label={selectedLabel} />
         </article>
 
-        <article className="panel ranking-panel">
+        {level !== "country" && <article className="panel ranking-panel">
           <div className="panel-heading">
-            <div><span>PERIOD AVERAGE</span><h3>{level === "total" ? "大区月均排名" : level === "continent" ? "国家月均排名" : "所属大区对比"}</h3></div>
+            <div><span>PERIOD AVERAGE</span><h3>{level === "total" ? "大洲月均排名" : "国家月均排名"}</h3></div>
             <em>kbd</em>
           </div>
           <div className="ranking-list">
@@ -385,7 +371,7 @@ export function CrudeImportDashboard() {
               </button>
             ))}
           </div>
-        </article>
+        </article>}
       </section>
 
       <section className="panel table-panel">
@@ -395,20 +381,20 @@ export function CrudeImportDashboard() {
         </div>
         <div className="table-scroll">
           <table>
-            <thead><tr><th>月份</th><th>{selectedLabel}</th><th>环比</th><th>占全国进口比重</th><th>数据状态</th></tr></thead>
+            <thead><tr><th>月份</th><th>{selectedLabel}</th><th>环比</th><th>同比</th></tr></thead>
             <tbody>
               {rangeDates.map((date, index) => {
                 const value = rangeValues[index];
                 const previous = index ? rangeValues[index - 1] : null;
                 const mom = value != null && previous != null && previous !== 0 ? ((value - previous) / previous) * 100 : null;
-                const totalValue = totalSeries?.values[startIndex + index] ?? null;
-                const share = value != null && totalValue != null && totalValue !== 0 ? (value / totalValue) * 100 : null;
+                const yearAgoIndex = startIndex + index - 12;
+                const yearAgo = yearAgoIndex >= 0 ? selected.values[yearAgoIndex] : null;
+                const yoy = value != null && yearAgo != null && yearAgo !== 0 ? ((value - yearAgo) / yearAgo) * 100 : null;
                 return (
                   <tr key={date}>
                     <td>{date}</td><td className="numeric">{fmt(value)}</td>
                     <td className={`numeric ${mom != null && mom < 0 ? "negative" : "positive"}`}>{mom == null ? "—" : `${mom >= 0 ? "+" : ""}${fmt(mom)}%`}</td>
-                    <td className="numeric">{share == null ? "—" : `${fmt(share)}%`}</td>
-                    <td><span className={value == null ? "status missing" : "status"}>{value == null ? "未发布" : "已发布"}</span></td>
+                    <td className={`numeric ${yoy != null && yoy < 0 ? "negative" : "positive"}`}>{yoy == null ? "—" : `${yoy >= 0 ? "+" : ""}${fmt(yoy)}%`}</td>
                   </tr>
                 );
               }).reverse()}
@@ -417,10 +403,6 @@ export function CrudeImportDashboard() {
         </div>
       </section>
 
-      <footer>
-        <p><strong>口径说明：</strong>数值来自工作簿 “Crude imports — Volume” 页；大区和总量采用表内原始汇总行，空白单元格显示为“未发布”，0 保留为已报告的零值。源表中南非 2017-07（-2 kbd）与 2017-08（-1 kbd）的负值按原值保留。</p>
-        <p>{data.metadata.compiled} {data.metadata.sources}</p>
-      </footer>
     </main>
   );
 }

@@ -37,3 +37,13 @@ test("published snapshot has one value per series and month", async () => {
   assert.ok(payload.series.some((row) => row.values.includes(null)), "missing values must remain null");
   assert.ok(payload.series.some((row) => row.values.includes(0)), "reported zeroes must remain numeric zeroes");
 });
+
+test("implements the first review-sheet revision", async () => {
+  const source = await readFile(new URL("../app/CrudeImportDashboard.tsx", import.meta.url), "utf8");
+  assert.match(source, /CHINA CRUDE IMPORT<\/p>/);
+  assert.match(source, /<span>数据日期<\/span>/);
+  assert.match(source, /按大洲/);
+  assert.match(source, /setStart\(payload\.dates\[0\]\)/);
+  assert.match(source, /<th>同比<\/th>/);
+  assert.doesNotMatch(source, /hero-copy|期末值|期间峰值|首末变化|占全国进口比重|数据状态|<footer>/);
+});

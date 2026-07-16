@@ -36,12 +36,11 @@ button, select { font: inherit; }
 }
 .eyebrow { margin: 0 0 12px; color: #90c0bb; font-size: 12px; font-weight: 700; letter-spacing: .2em; }
 .hero h1 { margin: 0; font-size: clamp(30px, 4vw, 48px); letter-spacing: -.04em; line-height: 1.12; }
-.hero-copy { max-width: 680px; margin: 14px 0 0; color: #c9dad7; font-size: 16px; }
 .freshness { min-width: 180px; border-left: 1px solid rgba(255,255,255,.22); padding-left: 24px; }
 .freshness span, .freshness small { display: block; color: #a9c8c4; font-size: 12px; }
 .freshness strong { display: block; margin: 5px 0; font: 600 26px/1.2 Georgia, serif; }
 
-.filter-panel, .selection-title, .stat-grid, .analysis-grid, .table-panel, footer {
+.filter-panel, .selection-title, .stat-grid, .analysis-grid, .table-panel {
   width: min(1440px, calc(100% - 56px));
   margin-left: auto;
   margin-right: auto;
@@ -65,6 +64,7 @@ button, select { font: inherit; }
 .field-label { color: var(--muted); font-size: 12px; font-weight: 700; letter-spacing: .04em; }
 select { height: 44px; width: 100%; border: 1px solid #cbd5d0; border-radius: 6px; padding: 0 35px 0 12px; background: white; color: var(--ink); }
 select:focus, button:focus-visible { outline: 3px solid rgba(45,119,116,.2); outline-offset: 2px; }
+.visually-hidden { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
 .segmented { display: flex; height: 44px; padding: 3px; border: 1px solid #cbd5d0; border-radius: 6px; background: #f6f8f6; }
 .segmented button { flex: 1; border: 0; border-radius: 4px; background: transparent; color: var(--muted); cursor: pointer; }
 .segmented button.active { background: var(--teal); color: white; box-shadow: 0 2px 5px rgba(45,119,116,.2); }
@@ -74,13 +74,14 @@ select:focus, button:focus-visible { outline: 3px solid rgba(45,119,116,.2); out
 .selection-title h2 { margin: 5px 0 0; font-size: clamp(24px, 3vw, 34px); letter-spacing: -.03em; }
 .selection-title p { margin: 0; color: var(--muted); font: 15px/1.3 Georgia, serif; }
 
-.stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+.stat-grid { display: grid; grid-template-columns: minmax(260px, 380px); gap: 14px; }
 .stat-card { min-height: 125px; padding: 20px; border: 1px solid var(--line); border-top: 3px solid var(--teal); background: var(--paper); }
 .stat-card:nth-child(3) { border-top-color: var(--orange); }
 .stat-card span, .stat-card small { display: block; color: var(--muted); font-size: 12px; }
 .stat-card strong { display: block; margin: 11px 0 8px; font: 600 clamp(23px, 2.3vw, 33px)/1 Georgia, serif; }
 
 .analysis-grid { display: grid; grid-template-columns: minmax(0, 1.85fr) minmax(320px, .85fr); gap: 14px; margin-top: 14px; }
+.analysis-grid.single { grid-template-columns: 1fr; }
 .panel { border: 1px solid var(--line); background: var(--paper); }
 .panel-heading { min-height: 72px; display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 15px 18px; border-bottom: 1px solid var(--line); }
 .panel-heading h3 { margin: 4px 0 0; font-size: 18px; }
@@ -116,9 +117,6 @@ td.numeric { text-align: right; font-variant-numeric: tabular-nums; font-family:
 .status.missing { color: #9a7b65; }
 .status.missing::before { background: #c6a78f; }
 
-footer { margin-top: 18px; padding: 18px 0; color: var(--muted); font-size: 12px; line-height: 1.7; }
-footer p { margin: 2px 0; }
-
 @media (max-width: 1100px) {
   .filter-panel { flex-wrap: wrap; }
   .filter-panel label, .scope-control { min-width: calc(33.333% - 10px); }
@@ -128,7 +126,7 @@ footer p { margin: 2px 0; }
 @media (max-width: 760px) {
   .hero { min-height: 220px; align-items: flex-start; flex-direction: column; padding: 28px 20px 45px; }
   .freshness { border-left: 0; border-top: 1px solid rgba(255,255,255,.22); padding: 13px 0 0; }
-  .filter-panel, .selection-title, .stat-grid, .analysis-grid, .table-panel, footer { width: calc(100% - 24px); }
+  .filter-panel, .selection-title, .stat-grid, .analysis-grid, .table-panel { width: calc(100% - 24px); }
   .filter-panel label, .scope-control { min-width: 100%; }
   .stat-grid { grid-template-columns: repeat(2, 1fr); }
   .selection-title { align-items: flex-start; flex-direction: column; }
