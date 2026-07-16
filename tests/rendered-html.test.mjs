@@ -101,3 +101,8 @@ test("includes a GitHub Pages static deployment path", async () => {
   assert.match(workflow, /actions\/deploy-pages@v4/);
   assert.match(pagesConfig, /base: repositoryName \? `\/\$\{repositoryName\}\//);
 });
+
+test("keeps the dark page header compact", async () => {
+  const css = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
+  assert.match(css, /\.page-header\s*{[^}]*padding:\s*12px 30px/s);
+});

@@ -31,7 +31,7 @@ button, select { font: inherit; }
   align-items: center;
   justify-content: space-between;
   gap: 28px;
-  padding: 22px 30px 20px;
+  padding: 12px 30px;
   background: var(--primary-dark);
   color: #fff;
 }
@@ -168,7 +168,7 @@ tbody tr:hover { background: #f1f6f4; }
 }
 
 @media (max-width: 680px) {
-  .page-header { align-items: start; flex-direction: column; padding: 18px; }
+  .page-header { align-items: start; flex-direction: column; padding: 14px 18px; }
   .freshness { min-width: 0; align-self: stretch; text-align: left; }
   .tabs { display: flex; margin: 12px 12px 0; }
   .tab { flex: 1; padding: 0 10px; font-size: 15px; }
