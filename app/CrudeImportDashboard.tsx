@@ -153,13 +153,10 @@ function TrendChart({ dates, values, label }: { dates: string[]; values: Array<n
   });
   if (current) segments.push(current);
   const lastDateIndex = dates.length - 1;
-  const minTickGap = 88;
-  const maxTickCount = Math.max(2, Math.floor(plotW / minTickGap) + 1);
-  const tickEvery = Math.max(1, Math.ceil(lastDateIndex / (maxTickCount - 1)));
-  const tickIndices: number[] = [];
-  for (let index = 0; index < lastDateIndex; index += tickEvery) tickIndices.push(index);
-  while (tickIndices.length > 1 && x(lastDateIndex) - x(tickIndices.at(-1)!) < minTickGap) tickIndices.pop();
-  if (lastDateIndex >= 0 && tickIndices.at(-1) !== lastDateIndex) tickIndices.push(lastDateIndex);
+  const tickIntervals = Math.min(7, lastDateIndex);
+  const tickIndices = tickIntervals === 0
+    ? [0]
+    : Array.from({ length: tickIntervals + 1 }, (_, step) => Math.round((step * lastDateIndex) / tickIntervals));
 
   return (
     <div className="chart-wrap">

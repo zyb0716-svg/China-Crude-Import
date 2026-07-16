@@ -81,10 +81,10 @@ test("uses concise filter labels and the prior January as the default start", as
   assert.match(source, /payload\.dates\.includes\(defaultStart\) \? defaultStart : payload\.dates\[0\]/);
 });
 
-test("keeps the latest x-axis label separated from the preceding tick", async () => {
+test("distributes x-axis labels evenly between the selected endpoints", async () => {
   const source = await readFile(new URL("../app/CrudeImportDashboard.tsx", import.meta.url), "utf8");
-  assert.match(source, /const minTickGap = 88/);
-  assert.match(source, /x\(lastDateIndex\) - x\(tickIndices\.at\(-1\)!\) < minTickGap/);
-  assert.match(source, /tickIndices\.push\(lastDateIndex\)/);
+  assert.match(source, /const tickIntervals = Math\.min\(7, lastDateIndex\)/);
+  assert.match(source, /Math\.round\(\(step \* lastDateIndex\) \/ tickIntervals\)/);
   assert.doesNotMatch(source, /index % tickEvery === 0 \|\| index === dates\.length - 1/);
+  assert.doesNotMatch(source, /minTickGap|tickIndices\.push\(lastDateIndex\)/);
 });
