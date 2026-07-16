@@ -152,7 +152,14 @@ function TrendChart({ dates, values, label }: { dates: string[]; values: Array<n
     current += `${current ? " L" : "M"}${x(index).toFixed(2)} ${y(value).toFixed(2)}`;
   });
   if (current) segments.push(current);
-  const tickEvery = Math.max(1, Math.ceil(dates.length / 8));
+  const lastDateIndex = dates.length - 1;
+  const minTickGap = 88;
+  const maxTickCount = Math.max(2, Math.floor(plotW / minTickGap) + 1);
+  const tickEvery = Math.max(1, Math.ceil(lastDateIndex / (maxTickCount - 1)));
+  const tickIndices: number[] = [];
+  for (let index = 0; index < lastDateIndex; index += tickEvery) tickIndices.push(index);
+  while (tickIndices.length > 1 && x(lastDateIndex) - x(tickIndices.at(-1)!) < minTickGap) tickIndices.pop();
+  if (lastDateIndex >= 0 && tickIndices.at(-1) !== lastDateIndex) tickIndices.push(lastDateIndex);
 
   return (
     <div className="chart-wrap">
@@ -173,11 +180,9 @@ function TrendChart({ dates, values, label }: { dates: string[]; values: Array<n
             </g>
           );
         })}
-        {dates.map((date, index) =>
-          index % tickEvery === 0 || index === dates.length - 1 ? (
-            <text key={date} x={x(index)} y={height - 20} textAnchor="middle" className="axis-label">{date}</text>
-          ) : null,
-        )}
+        {tickIndices.map((index) => (
+          <text key={dates[index]} x={x(index)} y={height - 20} textAnchor="middle" className="axis-label">{dates[index]}</text>
+        ))}
         {segments.map((path, index) => <path key={index} d={path} className="trend-line" />)}
         {values.map((value, index) =>
           value == null ? null : (
