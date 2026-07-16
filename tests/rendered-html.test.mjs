@@ -47,3 +47,17 @@ test("implements the first review-sheet revision", async () => {
   assert.match(source, /<th>同比<\/th>/);
   assert.doesNotMatch(source, /hero-copy|期末值|期间峰值|首末变化|占全国进口比重|数据状态|<footer>/);
 });
+
+test("matches the OilChem interface system", async () => {
+  const [source, css] = await Promise.all([
+    readFile(new URL("../app/CrudeImportDashboard.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/globals.css", import.meta.url), "utf8"),
+  ]);
+  assert.match(source, /className="tabs"/);
+  assert.match(source, /className="query-panel"/);
+  assert.match(source, /className="block chart-panel"/);
+  assert.match(css, /--bg:\s*#f5f6f3/);
+  assert.match(css, /--primary-dark:\s*#203230/);
+  assert.match(css, /--primary:\s*#2f6f73/);
+  assert.match(css, /grid-template-columns:\s*repeat\(2, minmax\(0, 1fr\)\)/);
+});

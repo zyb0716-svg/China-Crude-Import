@@ -124,16 +124,6 @@ function average(values: Array<number | null>) {
   return valid.length ? valid.reduce((sum, value) => sum + value, 0) / valid.length : null;
 }
 
-function StatCard({ label, value, note }: { label: string; value: string; note: string }) {
-  return (
-    <article className="stat-card">
-      <span>{label}</span>
-      <strong>{value}</strong>
-      <small>{note}</small>
-    </article>
-  );
-}
-
 function TrendChart({ dates, values, label }: { dates: string[]; values: Array<number | null>; label: string }) {
   const width = 980;
   const height = 360;
@@ -272,7 +262,7 @@ export function CrudeImportDashboard() {
 
   return (
     <main className="dashboard-shell">
-      <header className="hero">
+      <header className="page-header">
         <div>
           <p className="eyebrow">CHINA CRUDE IMPORT</p>
           <h1>中国原油进口分国别查询</h1>
@@ -284,17 +274,20 @@ export function CrudeImportDashboard() {
         </div>
       </header>
 
-      <section className="filter-panel" aria-label="查询条件">
-        <div className="scope-control">
-          <span className="field-label">查询层级</span>
-          <div className="segmented">
-            {(["total", "continent", "country"] as Level[]).map((item) => (
-              <button key={item} className={level === item ? "active" : ""} onClick={() => setLevel(item)} type="button">
-                {item === "total" ? "总进口量" : item === "continent" ? "按大洲" : "按国家"}
-              </button>
-            ))}
-          </div>
+      <nav className="tabs" aria-label="查询层级">
+        {(["total", "continent", "country"] as Level[]).map((item) => (
+          <button key={item} className={`tab ${level === item ? "active" : ""}`} onClick={() => setLevel(item)} type="button">
+            {item === "total" ? "总进口量" : item === "continent" ? "按大洲" : "按国家"}
+          </button>
+        ))}
+      </nav>
+
+      <section className="query-panel" aria-label="查询条件">
+        {level === "total" && <div className="scope-summary">
+          <span>查询对象</span>
+          <strong>总进口量</strong>
         </div>
+        }
         {level !== "total" && (
           <label>
             <span className="field-label">大洲选择</span>
@@ -323,30 +316,23 @@ export function CrudeImportDashboard() {
             {data.dates.slice(startIndex).map((date) => <option key={date}>{date}</option>)}
           </select>
         </label>
-      </section>
-
-      <section className="selection-title">
-        <div>
-          <span>{level === "total" ? "全国口径" : level === "continent" ? "大洲口径" : CONTINENT_LABELS[selected.continent || ""]}</span>
-          <h2>{selectedLabel}</h2>
+        <div className="metric inline-metric">
+          <span>期间月均</span>
+          <strong>{fmt(avg)} kbd</strong>
+          <small>{validValues.length} 个月有效值</small>
         </div>
-        <p>{periodLabel}</p>
-      </section>
-
-      <section className="stat-grid">
-        <StatCard label="期间月均" value={`${fmt(avg)} kbd`} note={`${validValues.length} 个月有效值`} />
       </section>
 
       <section className={`analysis-grid ${level === "country" ? "single" : ""}`}>
-        <article className="panel chart-panel">
+        <article className="block chart-panel">
           <div className="panel-heading">
-            <div><span>MONTHLY TREND</span><h3>月度进口趋势</h3></div>
+            <div><h3>{selectedLabel}月度进口趋势</h3><span>{periodLabel}</span></div>
             <em>kbd</em>
           </div>
           <TrendChart dates={rangeDates} values={rangeValues} label={selectedLabel} />
         </article>
 
-        {level !== "country" && <article className="panel ranking-panel">
+        {level !== "country" && <article className="block ranking-panel">
           <div className="panel-heading">
             <div><span>PERIOD AVERAGE</span><h3>{level === "total" ? "大洲月均排名" : "国家月均排名"}</h3></div>
             <em>kbd</em>
@@ -374,7 +360,7 @@ export function CrudeImportDashboard() {
         </article>}
       </section>
 
-      <section className="panel table-panel">
+      <section className="block table-panel">
         <div className="panel-heading">
           <div><span>MONTHLY DETAIL</span><h3>月度数据明细</h3></div>
           <em>{rangeDates.length} 个月</em>
