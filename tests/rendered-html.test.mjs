@@ -41,9 +41,9 @@ test("published snapshot has one value per series and month", async () => {
 test("implements the first review-sheet revision", async () => {
   const source = await readFile(new URL("../app/CrudeImportDashboard.tsx", import.meta.url), "utf8");
   assert.match(source, /CHINA CRUDE IMPORT<\/p>/);
-  assert.match(source, /<span>数据日期<\/span>/);
+  assert.match(source, /<span>数据截至<\/span>/);
   assert.match(source, /按大洲/);
-  assert.match(source, /setStart\(payload\.dates\[0\]\)/);
+  assert.match(source, /const defaultStart = `\$\{latestYear - 1\}-01`/);
   assert.match(source, /<th>同比<\/th>/);
   assert.doesNotMatch(source, /hero-copy|期末值|期间峰值|首末变化|占全国进口比重|数据状态|<footer>/);
 });
@@ -68,7 +68,15 @@ test("keeps the monthly detail presentation concise and centered", async () => {
     readFile(new URL("../app/globals.css", import.meta.url), "utf8"),
   ]);
   assert.doesNotMatch(source, /个月有效值|单位：kbd（千桶\/日）|rangeDates\.length\}\s*个月/);
-  assert.match(css, /\.table-panel \.panel-heading\s*{[^}]*text-align:\s*center/s);
+  assert.match(css, /\.table-panel \.panel-heading\s*{[^}]*text-align:\s*left/s);
   assert.match(css, /th, td\s*{[^}]*text-align:\s*center/s);
   assert.match(css, /td\.numeric\s*{[^}]*text-align:\s*center/s);
+});
+
+test("uses concise filter labels and the prior January as the default start", async () => {
+  const source = await readFile(new URL("../app/CrudeImportDashboard.tsx", import.meta.url), "utf8");
+  assert.match(source, /className="field-label">大洲<\/span>/);
+  assert.match(source, /className="field-label">国家<\/span>/);
+  assert.doesNotMatch(source, />大洲选择<|className="visually-hidden">国家/);
+  assert.match(source, /payload\.dates\.includes\(defaultStart\) \? defaultStart : payload\.dates\[0\]/);
 });

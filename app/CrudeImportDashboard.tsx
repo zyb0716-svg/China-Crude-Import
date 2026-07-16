@@ -208,7 +208,9 @@ export function CrudeImportDashboard() {
       })
       .then((payload: Payload) => {
         setData(payload);
-        setStart(payload.dates[0]);
+        const latestYear = Number((payload.dates.at(-1) || "").slice(0, 4));
+        const defaultStart = `${latestYear - 1}-01`;
+        setStart(payload.dates.includes(defaultStart) ? defaultStart : payload.dates[0]);
         setEnd(payload.dates.at(-1) || "");
       })
       .catch(() => setError("数据加载失败，请刷新页面后重试。"));
@@ -267,7 +269,7 @@ export function CrudeImportDashboard() {
           <h1>中国原油进口分国别查询</h1>
         </div>
         <div className="freshness">
-          <span>数据日期</span>
+          <span>数据截至</span>
           <strong>{data.metadata.latestMonth}</strong>
         </div>
       </header>
@@ -288,7 +290,7 @@ export function CrudeImportDashboard() {
         }
         {level !== "total" && (
           <label>
-            <span className="field-label">大洲选择</span>
+            <span className="field-label">大洲</span>
             <select value={continent} onChange={(event) => setContinent(event.target.value)}>
               {continents.map((item) => <option key={item.id} value={item.name}>{displayName(item)}</option>)}
             </select>
@@ -296,7 +298,7 @@ export function CrudeImportDashboard() {
         )}
         {level === "country" && (
           <label className="country-field">
-            <span className="visually-hidden">国家 / 地区</span>
+            <span className="field-label">国家</span>
             <select aria-label="国家或地区" value={country} onChange={(event) => setCountry(event.target.value)}>
               {countries.map((item) => <option key={item.id} value={item.name}>{displayName(item)}</option>)}
             </select>
