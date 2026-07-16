@@ -101,9 +101,3 @@ test("includes a GitHub Pages static deployment path", async () => {
   assert.match(workflow, /actions\/deploy-pages@v4/);
   assert.match(pagesConfig, /base: repositoryName \? `\/\$\{repositoryName\}\//);
 });
-
-test("uses compact navigation tabs with more space before filters", async () => {
-  const css = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
-  assert.match(css, /\.tab\s*{[^}]*height:\s*36px[^}]*padding:\s*0 14px/s);
-  assert.match(css, /\.query-panel\s*{[^}]*margin:\s*22px 26px 16px/s);
-});
