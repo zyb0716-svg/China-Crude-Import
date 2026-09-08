@@ -56,6 +56,14 @@ def extract(source: Path) -> dict:
     if not dates:
         raise ValueError("No month headers found from C6")
 
+    footer_lines = [
+        str(sheet.cell(row, 2).value).strip()
+        for row in range(TOTAL_ROW + 1, sheet.max_row + 1)
+        if sheet.cell(row, 2).value
+    ]
+    compiled = next((line for line in footer_lines if line.startswith("Data compiled")), "")
+    sources = next((line for line in footer_lines if line.startswith("Sources:")), "")
+
     series: list[dict] = []
     current_continent: str | None = None
     for row in range(7, TOTAL_ROW + 1):
@@ -90,8 +98,8 @@ def extract(source: Path) -> dict:
             "sheet": sheet.title,
             "unit": "kbd",
             "sourceRange": "B6 through row 81; requested market rows 7–80 plus Total crude imports at row 81",
-            "compiled": str(sheet.cell(84, 2).value or "").strip(),
-            "sources": str(sheet.cell(85, 2).value or "").strip(),
+            "compiled": compiled,
+            "sources": sources,
             "firstMonth": dates[0],
             "latestMonth": dates[-1],
         },

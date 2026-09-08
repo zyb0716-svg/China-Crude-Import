@@ -26,9 +26,11 @@ test("server renders the crude-import dashboard shell", async () => {
 
 test("published snapshot has one value per series and month", async () => {
   const payload = JSON.parse(await readFile(new URL("../public/data/crude-imports.json", import.meta.url), "utf8"));
-  assert.equal(payload.dates.length, 210);
+  assert.equal(payload.dates.length, 211);
   assert.equal(payload.dates[0], "2009-01");
-  assert.equal(payload.dates.at(-1), "2026-06");
+  assert.equal(payload.dates.at(-1), "2026-07");
+  assert.equal(payload.metadata.compiled, "Data compiled August 2026.");
+  assert.match(payload.metadata.sources, /^Sources:/);
   assert.equal(payload.series.filter((row) => row.level === "total").length, 1);
   assert.equal(payload.series.filter((row) => row.level === "continent").length, 5);
   assert.equal(payload.series.filter((row) => row.level === "country").length, 69);
